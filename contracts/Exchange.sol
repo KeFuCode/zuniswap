@@ -19,8 +19,18 @@ contract Exchange {
     }
 
     // 合约内 token 余额
-    function getReverse() public view returns (uint) {
+    function getReserve() public view returns (uint) {
         return IERC20(tokenAddress).balanceOf(address(this));
     }
 
+    // 获取 token 价格
+    function getPrice(uint inputReserve, uint outputReserve)
+        public
+        pure
+        returns (uint)
+    {
+        require(inputReserve > 0 && outputReserve > 0, "invalid reserves");
+
+        return (inputReserve * 1000) / outputReserve;
+    }
 }
