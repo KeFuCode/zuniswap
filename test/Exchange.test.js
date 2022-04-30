@@ -52,6 +52,12 @@ describe("Exchange", () => {
     
         let tokensOut = await exchange.getTokenAmount(toWei(1));
         expect(fromWei(tokensOut)).to.equal("1.998001998001998001");
+
+        tokensOut = await exchange.getTokenAmount(toWei(100));
+        expect(fromWei(tokensOut)).to.equal("181.818181818181818181");
+
+        tokensOut = await exchange.getTokenAmount(toWei(1000));
+        expect(fromWei(tokensOut)).to.equal("1000.0");
         });
     });
   
@@ -62,6 +68,12 @@ describe("Exchange", () => {
     
         let ethOut = await exchange.getEthAmount(toWei(2));
         expect(fromWei(ethOut)).to.equal("0.999000999000999");
+
+        ethOut = await exchange.getEthAmount(toWei(100));
+        expect(fromWei(ethOut)).to.equal("47.619047619047619047");
+
+        ethOut = await exchange.getEthAmount(toWei(2000));
+        expect(fromWei(ethOut)).to.equal("500.0");
         });
     });
 });
