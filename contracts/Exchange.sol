@@ -55,7 +55,7 @@ contract Exchange is ERC20 {
         return (inputReserve * 1000) / outputReserve;
     }
 
-    // 计算 eth和 token 数量变化：dy = ydx / y + dx
+    // 计算 eth和 token 数量变化：dy = (y * dx) / (y + dx)
     function getAmount(
         uint inputAmount,
         uint inputReserve,
@@ -63,7 +63,11 @@ contract Exchange is ERC20 {
     ) private pure returns (uint) {
         require(inputReserve > 0 && outputReserve > 0, "invalid reserves");
 
-        return (inputAmount * outputReserve) / (inputReserve + inputAmount);
+        uint inputAmountWithFee = inputAmount * 99;
+        uint numerator = inputAmountWithFee * outputReserve;
+        uint denominator = (inputReserve * 100) + inputAmountWithFee;
+
+        return numerator / denominator;
     }
 
     // 输入 eth 数量，返回对应的 token 数量
