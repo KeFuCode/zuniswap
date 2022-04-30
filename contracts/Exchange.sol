@@ -38,6 +38,20 @@ contract Exchange is ERC20 {
             return liquidity;
         }
     }
+    
+    // 消除流动性
+    function removeLiquidity(uint _amount) public returns (uint, uint) {
+        require(_amount > 0, "invalid amount");
+
+        uint ethAmount = (address(this).balance * _amount) / totalSupply();
+        uint tokenAmount = (getReserve() * _amount) / totalSupply();
+
+        _burn(msg.sender, _amount);
+        payable(msg.sender).transfer(ethAmount);
+        IERC20(tokenAddress).transfer(msg.sender, tokenAmount);
+
+        return (ethAmount, tokenAmount);
+    }
 
     // 合约内 token 余额
     function getReserve() public view returns (uint) {
