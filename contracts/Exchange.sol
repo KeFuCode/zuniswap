@@ -41,6 +41,7 @@ contract Exchange {
         return (inputAmount * outputReserve) / (inputReserve + inputAmount);
     }
 
+    // 输入 eth 数量，返回对应的 token 数量
     function getTokenAmount(uint _ethSold) public view returns (uint) {
         require(_ethSold > 0, "ethSold is too small");
     
@@ -49,11 +50,41 @@ contract Exchange {
         return getAmount(_ethSold, address(this).balance, tokenReserve); 
     }
 
+    // 输入 token 数量，返回对应的 eth 数量
     function getEthAmount(uint _tokenSold) public view returns (uint) {
         require(_tokenSold > 0, "tokenSold is too small");
 
         uint tokenReserve = getReserve();
 
         return getAmount(_tokenSold, tokenReserve, address(this).balance);
+    }
+
+    // 将 eth 兑换为 token：输入参数为希望获得的最小 token 数量，
+    function ethToTokenSwap(uint _minTokens) public payable {
+        uint tokenReserve = getReserve();
+        uint tokensBought = getAmount(
+            msg.value,
+            address(this).balance - msg.value,
+            tokenReserve
+        );
+
+        require(tokensBought > _minTokens, "insufficient output amount");
+
+        IERC20(tokenAddress).transfer(msg.sender, tokensBought);
+    }
+
+    // 将 token 兑换为 eth：输入参数为 token 数量，希望获得的最少 eth数量
+    function tokenToEthSwap(uint _tokenSold, uint _minEth)  public {
+        uint tokenReserve = getReserve();
+        uint ethBought = getAmount(
+            _tokenSold,
+            tokenReserve,
+            address(this).balance
+        );
+
+        require(ethBought > _minEth, "insufficient output amount");
+    
+        IERC20(tokenAddress).transferFrom(msg.sender, address(this), _tokenSold);
+        payable(msg.sender).transfer(ethBought);
     }
 }
